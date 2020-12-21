@@ -3,6 +3,7 @@ package conf
 import (
 	"os"
 	"quickGo/model"
+	"quickGo/cache"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -20,9 +21,7 @@ func Init() {
 
 	if os.Getenv("RIM") == "use" {
 		model.DataBase(os.Getenv("MYSQL_DSN"))
-
-		
-
+		cache.Redis()
 	}
 
 }

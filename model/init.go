@@ -5,6 +5,9 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
+
+	//
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 // DB 包含了当前db连接的信息
