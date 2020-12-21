@@ -4,3 +4,6 @@
    1. 镜像代理找不到这个包，就会去源头找。当代理返回 404 时就去源头抓取。
    2. 将 GOPROXY 设置为 https://goproxy.cn,direct
    3. go env -w GOPROXY=https://goproxy.cn,direct
+3. gin的engine Use的中间件，是gin.HandlerFunc 类型，不是它的指针类型
+4. 我return一个东西，但函数定义了忘了写返回的类型，就报错：too many arguments to return   have (gin.HandlerFunc) want ()
+5. Unix() 返回int64 一般用于生成时间戳
