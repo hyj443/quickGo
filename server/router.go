@@ -26,6 +26,7 @@ func NewRouter() *gin.Engine {
 	if os.Getenv("V1") == "on" {
 		v1:= r.Group("/api/v1")
 
+		v1.POST("user/register", api.UserRegister)
 		v1.POST("user/login", api.UserLogin)
 
 

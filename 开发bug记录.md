@@ -7,3 +7,4 @@
 3. gin的engine Use的中间件，是gin.HandlerFunc 类型，不是它的指针类型
 4. 我return一个东西，但函数定义了忘了写返回的类型，就报错：too many arguments to return   have (gin.HandlerFunc) want ()
 5. Unix() 返回int64 一般用于生成时间戳
+6. 使用标准包可以出现代码提示，但是使用自己的包或者第三方库无法出现代码提示，你可以查看一下你的配置项。 "go.inferGopath": true,

@@ -16,6 +16,19 @@ type User struct {
 	SuperUser      bool
 }
 
+const (
+	// PassWordCost 密码加密难度
+	PassWordCost = 12
+	// Active 激活用户
+	Active string = "active"
+	// Inactive 未激活用户
+	Inactive string = "inactive"
+	// Suspend 被封禁用户
+	Suspend string = "suspend"
+)
+
+
+
 // SetPassword 对密码进行加密，生成哈希密码，保存到user模型的PasswordDigest，加密的强度是12
 func (user *User) SetPassword(password string) error {
 	//func GenerateFromPassword(password []byte, cost int) ([]byte, error)
