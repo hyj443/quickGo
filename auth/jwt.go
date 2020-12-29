@@ -1,10 +1,13 @@
 package auth
 
 import (
+	"quickGo/model"
+
 	"github.com/dgrijalva/jwt-go"
 )
 
-// Jwt Jwt-go 去编码所需的结构体
+// Jwt 需要编码的结构体
 type Jwt struct {
-	
+	jwt.StandardClaims
+	Data model.User
 }

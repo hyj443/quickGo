@@ -27,21 +27,26 @@ const (
 	Suspend string = "suspend"
 )
 
-
+// GetUser 用id获取用户
+func GetUser(id interface{}) (User, error) {
+	// 创建一个空的user模型
+	var user User
+	// 查找数据库将第一个匹配到id的记录，数据存到user
+	res := DB.First(&user, id)
+	return user, res.Error
+}
 
 // SetPassword 对密码进行加密，生成哈希密码，保存到user模型的PasswordDigest，加密的强度是12
 func (user *User) SetPassword(password string) error {
-	//func GenerateFromPassword(password []byte, cost int) ([]byte, error)
+	// func GenerateFromPassword(password []byte, cost int) ([]byte, error)
+	// GenerateFromPassword returns the bcrypt hash of the password at the given cost.
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 
 	if err != nil {
 		return err
 	}
-
 	user.PasswordDigest = string(bytes)
-
 	return nil
-
 }
 
 // CheckPassword 校验密码

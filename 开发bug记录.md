@@ -8,3 +8,6 @@
 4. 我return一个东西，但函数定义了忘了写返回的类型，就报错：too many arguments to return   have (gin.HandlerFunc) want ()
 5. Unix() 返回int64 一般用于生成时间戳
 6. 使用标准包可以出现代码提示，但是使用自己的包或者第三方库无法出现代码提示，你可以查看一下你的配置项。 "go.inferGopath": true,
+7. UserName string `form:"user_name" json:"user_name" binding:"required,min=5,max=20"` 中间没有逗号分隔的
+8. 接收参数建议使用c.ShouldBind方法, 避免主动抛出400错误
+9. apiv1 "quickGo/api/api_v1" 给import的包起别名

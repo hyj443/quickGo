@@ -7,9 +7,10 @@ import (
 	"github.com/go-redis/redis"
 )
 
-// RedisClient redis缓存client实例
+// RedisClient redis client实例
 var RedisClient *redis.Client
 
+// Redis 在中间件中初始化redis连接
 func Redis() {
 	// 解析REDIS_DB环境变量字符串成十进制的数字 ParseUint类似于ParseInt，只是它是无符号的
 	db, _ := strconv.ParseUint(os.Getenv("REDIS_DB"), 10, 64)

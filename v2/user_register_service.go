@@ -1,10 +1,11 @@
-package v1
+package v2
 
 import (
 	"quickGo/model"
 	"quickGo/serializer"
 )
 
+// UserRegisterService 管理用户注册服务
 type UserRegisterService struct {
 	Nickname        string `form:"nickname" json:"nickname" binding:"required,min=2,max=30"`
 	UserName        string `form:"user_name" json:"user_name" binding:"required,min=5,max=30"`
@@ -12,8 +13,8 @@ type UserRegisterService struct {
 	PasswordConfirm string `form:"password_confirm" json:"password_confirm" binding:"required,min=8,max=18"`
 }
 
-// Valid 验证表单，将post过来的账密进行验证，首先看两次输入的密码是否一致，再看用户名和昵称是否已经存在于数据库，即是否已经有重复的数据
-func (service UserRegisterService) Valid() *serializer.Response {
+// Valid 验证表单
+func (service *UserRegisterService) Valid() *serializer.Response {
 	if service.PasswordConfirm != service.Password {
 		return &serializer.Response{
 			Code:    serializer.UserPasswordError,
@@ -26,51 +27,52 @@ func (service UserRegisterService) Valid() *serializer.Response {
 	if count > 0 {
 		return &serializer.Response{
 			Code:    serializer.UserRepeatError,
-			Message: "昵称已存在",
+			Message: "昵称被占用",
 		}
 	}
+
 	count = 0
-	model.DB.Model(&model.User{}).Where("user_name = ?", service.Nickname).Count(&count)
+	model.DB.Model(&model.User{}).Where("user_name = ?", service.UserName).Count(&count)
 	if count > 0 {
 		return &serializer.Response{
 			Code:    serializer.UserRepeatError,
-			Message: "用户名已经存在",
+			Message: "用户名被占用",
 		}
 	}
 
 	return nil
 }
 
-// Register 进行用户注册
+// Register 用户注册
 func (service *UserRegisterService) Register() *serializer.Response {
-	// 创建用户模型，根据传过来的信息
 	user := model.User{
 		NickName: service.Nickname,
 		UserName: service.UserName,
 		Status:   model.Active,
 	}
-	// 先进行表单验证
+
+	// 表单验证
 	if err := service.Valid(); err != nil {
 		return err
 	}
 
-	// 进行密码加密
+	// 加密密码
 	if err := user.SetPassword(service.Password); err != nil {
 		return &serializer.Response{
 			Code:    serializer.ServerPanicError,
-			Message: "密码加密失败",
+			Message: "密码加密失败", 
 		}
 	}
 
-	// 将创建的用户模型存入数据库
+	// 创建用户
 	if err := model.DB.Create(&user).Error; err != nil {
 		return &serializer.Response{
 			Code:    serializer.DatabaseWriteError,
-			Message: "注册信息存入数据库失败",
+			Message: "注册失败",
 		}
 	}
+
 	return &serializer.Response{
 		Data: serializer.BuildUserResponse(user),
 	}
-
 }

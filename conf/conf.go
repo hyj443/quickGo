@@ -20,10 +20,16 @@ func Init() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
+
+
+
 	// 环境变量设置为use时，会启动数据库连接，设置为notuse不会打开连接
 	if os.Getenv("RIM") == "use" {
 		model.DataBase(os.Getenv("MYSQL_DSN"))
 		cache.Redis()
 	}
+
+
+	
 
 }
