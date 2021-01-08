@@ -60,11 +60,11 @@ func (service *UserRegisterService) Register() *serializer.Response {
 	if err := user.SetPassword(service.Password); err != nil {
 		return &serializer.Response{
 			Code:    serializer.ServerPanicError,
-			Message: "密码加密失败", 
+			Message: "密码加密失败",
 		}
 	}
 
-	// 创建用户
+	// 将user用户模型保存到数据库
 	if err := model.DB.Create(&user).Error; err != nil {
 		return &serializer.Response{
 			Code:    serializer.DatabaseWriteError,

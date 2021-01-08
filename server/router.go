@@ -68,16 +68,21 @@ func NewRouter() *gin.Engine {
 		}
 
 		jwtGroup := r.Group("/api/v2")
+
 		jwtGroup.POST("user/register", apiv2.UserRegister)
+
 		jwtGroup.POST("user/login", apiv2.UserLogin)
 
 		jwt := jwtGroup.Group("")
+
 		jwt.Use(middleware.JwtRequired())
+
 		jwt.GET("user/me", apiv2.UserMe)
+
 		jwt.PUT("user/changepassword", apiv2.ChangePassword)
+
 		// 注销
 		jwt.DELETE("user/logout", apiv2.Logout)
-
 	}
 
 	return r

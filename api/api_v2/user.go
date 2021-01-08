@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// UserRegister 用户注册接口函数
+// UserRegister 用户注册
 func UserRegister(c *gin.Context) {
 	var service v2.UserRegisterService
 
@@ -22,6 +22,7 @@ func UserRegister(c *gin.Context) {
 	}
 }
 
+// UserLogin 用户登录
 func UserLogin(c *gin.Context) {
 	var service v2.UserLoginService
 	if err := c.ShouldBind(&service); err == nil {
@@ -32,7 +33,9 @@ func UserLogin(c *gin.Context) {
 	}
 }
 
+// UserMe 用户详情
 func UserMe(c *gin.Context) {
+	// 从Context上获取当前用户模型
 	user := api.GetCurrentUser(c)
 	res := serializer.Response{
 		Data: serializer.BuildUserResponse(*user),
@@ -40,10 +43,13 @@ func UserMe(c *gin.Context) {
 	c.JSON(http.StatusOK, res.Format())
 }
 
+// ChangePassword 修改密码
 func ChangePassword(c *gin.Context) {
+	// 从Context上获取当前用户模型
 	user := api.GetCurrentUser(c)
-	var service v2.ChangePasswordService
 
+	var service v2.ChangePasswordService
+	// 将新密码信息绑定到service
 	if err := c.ShouldBind(&service); err != nil {
 		res := service.ChangePsw(user)
 		c.JSON(http.StatusOK, res.Format())
@@ -52,11 +58,14 @@ func ChangePassword(c *gin.Context) {
 	}
 }
 
+// Logout 用户注销
 func Logout(c *gin.Context) {
+	// 获取保存在Context上的token字符串
 	token, _ := c.Get("token")
 	tokenStr := token.(string)
-	// 在redis的jwt:baned这个集合中添加value：tokenStr
-	cache.RedisClient.SAdd("jwt:baned", tokenStr)
+	// 在redis的jwt:banned这个集合中添加tokenStr
+	cache.RedisClient.SAdd("jwt:banned", tokenStr)
+	
 	c.JSON(http.StatusOK, serializer.Response{
 		Message: "注销成功",
 	})

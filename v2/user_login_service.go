@@ -17,33 +17,38 @@ type UserLoginService struct {
 	Password string `form:"password" json:"password" binding:"required,min=8,max=18"`
 }
 
+// Login 用户登录函数
 func (service UserLoginService) Login() *serializer.Response {
 	var user model.User
+	// token过期时间点
 	ExpireTime := time.Now().Add(time.Hour * time.Duration(720)).Unix()
 
+	// 根据登录的用户名找到数据库中对应的用户模型，找不到就是用户名不存在
 	if err := model.DB.Where("user_name = ?", service.UserName).First(&user).Error; err != nil {
 		return &serializer.Response{
 			Code:    serializer.UserNotFoundError,
-			Message: "账号或密码错误",
+			Message: "账号或密码不正确",
 		}
 	}
 
-	if user.CheckPassword(service.Password) == false {
+	// 校验密码是否正确
+	if !user.CheckPassword(service.Password) {
 		return &serializer.Response{
 			Code:    serializer.UserNotFoundError,
-			Message: "账号或密码错误",
+			Message: "账号或密码不正确",
 		}
 	}
 
-	// 为当前的用户模型，生成一段token字符串，放到响应中，返回给客户端
+	// 用户登录，为用户生成专属唯一的token，放到响应中，返回给客户端
 	token, err := GenerateToken(user, ExpireTime)
+	// 生成token失败，把错误返回给客户端
 	if err != nil {
 		return &serializer.Response{
 			Code:  serializer.ServerPanicError,
 			Error: err.Error(),
 		}
 	}
-
+	// 生成token成功，将放入Data中，还有过期时间，给客户端
 	return &serializer.Response{
 		Data: gin.H{
 			"access_token": token,
@@ -53,6 +58,7 @@ func (service UserLoginService) Login() *serializer.Response {
 	}
 }
 
+// GenerateToken 生成token字符串
 func GenerateToken(user model.User, expireTime int64) (string, error) {
 	claims := auth.Jwt{
 		jwt.StandardClaims{
@@ -62,11 +68,11 @@ func GenerateToken(user model.User, expireTime int64) (string, error) {
 		user,
 	}
 	// func NewWithClaims(method SigningMethod, claims Claims) *Token {
-	// 创建一个新的token结构体
+	// 创建一个token结构体
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	// Get the complete, signed token
-	// 获取完整的签名token
-	jwtStr, err := token.SignedString(conf.SignKey)
 
-	return jwtStr, err
+	// Get the complete, signed token
+	tokenStr, err := token.SignedString(conf.SignKey)
+
+	return tokenStr, err
 }
