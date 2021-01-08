@@ -8,7 +8,7 @@ import (
 // Cors 跨域配置
 func Cors() gin.HandlerFunc {
 	config := cors.DefaultConfig()
-	
+
 	config.AllowMethods = []string{"PUT", "PATCH", "GET", "POST", "HEAD", "OPTIONS", "DELETE"}
 	config.AllowHeaders = []string{"Content-Type", "Origin", "Cookie", "Content-Length"}
 

@@ -22,7 +22,7 @@ func Ping(c *gin.Context) {
 
 // GetCurrentUser 获取当前用户
 func GetCurrentUser(c *gin.Context) *model.User {
-	// 从context上获取
+	// 从context上获取当前登录的用户模型
 	if user, _ := c.Get("user"); user != nil {
 		if u, ok := user.(*model.User); ok {
 			return u

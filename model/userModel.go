@@ -27,7 +27,7 @@ const (
 	Suspend string = "suspend"
 )
 
-// GetUser 用id获取用户
+// GetUser 用user_id获取用户
 func GetUser(id interface{}) (User, error) {
 	// 创建一个空的user模型
 	var user User

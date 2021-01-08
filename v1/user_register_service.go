@@ -42,8 +42,9 @@ func (service UserRegisterService) Valid() *serializer.Response {
 }
 
 // Register 进行用户注册
+// 先创建用户模型，再进行表单验证，进行密码加密，将用户模型存入数据库，最后返回响应给客户端的Response
 func (service *UserRegisterService) Register() *serializer.Response {
-	// 创建用户模型，根据传过来的信息
+	// 创建用户模型，填充传过来的信息
 	user := model.User{
 		NickName: service.Nickname,
 		UserName: service.UserName,
@@ -72,5 +73,4 @@ func (service *UserRegisterService) Register() *serializer.Response {
 	return &serializer.Response{
 		Data: serializer.BuildUserResponse(user),
 	}
-
 }

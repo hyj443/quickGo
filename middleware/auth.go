@@ -9,15 +9,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetCurUser 中间件函数，从context上获取ss，从ss获取当前登录的用户id，根据id获取用户模型，将用户模型保存到context上
+// GetCurUser 中间件，从Context上获取session对象，获取它上面的user_id，能获取到代表已登录
+// 根据user_id在数据库中找到对应的用户模型，将用户模型保存到Context的user字段
 func GetCurUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 从context上获取session对象
 		session := sessions.Default(c)
-		// 获取session对象中user_id对应的用户id
 		uid := session.Get("user_id")
 		if uid != nil {
-			// 根据用户id获取到用户模型
 			user, err := model.GetUser(uid)
 			if err != nil {
 				c.Set("user", user)
@@ -27,12 +25,12 @@ func GetCurUser() gin.HandlerFunc {
 	}
 }
 
-// AuthRequired 所有需要登录的路由要走的中间件
+// AuthRequired 需要登录的路由要走的中间件
 func AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 怎么确定有没有登录，就看看context上有没有user的数据
 		if user, _ := c.Get("user"); user != nil {
-			// 因为本来是interface{}类型，现在要推断它是不是User类型，如果是，那就成功挂载了
+			// 因为c.Keys的val是interface{}类型，现在要推断它是不是User类型
+			// 如果是，那就Context上有用户模型，即已经登录
 			if _, ok := user.(*model.User); ok {
 				c.Next()
 				return
@@ -44,12 +42,12 @@ func AuthRequired() gin.HandlerFunc {
 			Message: "需要先登录",
 		}.Format())
 
-		// prevents pending handlers from being called
+		// 防止等待的handler被调用
 		c.Abort()
 	}
 }
 
-// AuthAdmin 中间件，获取context上挂载的用户模型，看看SuperUser字段是否为真，看看是不是管理员
+// AuthAdmin 中间件，获取Context挂载的用户模型，如果SuperUser字段为真，是管理员，c.Next()
 func AuthAdmin() gin.HandlerFunc{
 	return func(c *gin.Context){
 		if user,_ := c.Get("user");user!= nil {
@@ -60,7 +58,7 @@ func AuthAdmin() gin.HandlerFunc{
 		}
 		c.JSON(http.StatusOK, serializer.Response{
 			Code: serializer.UserNotPermissionError,
-			Message:"你没有权限进行此操作",
+			Message:"需要管理员权限，才能进行此操作",
 		}.Format())
 		c.Abort()
 	}

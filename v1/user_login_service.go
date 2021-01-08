@@ -10,11 +10,11 @@ type UserLoginService struct {
 	PassWord string `form:"password" json:"password" binding:"required,min=8,max=20"`
 }
 
-// Login 用户登录函数，拿post过来的数据到数据库中查找对应的用户模型，然后进行密码校验
+// Login 用户登录，POST过来的数据到数据库中查找对应的用户模型，然后进行密码校验
 func (service UserLoginService) Login() *serializer.Response {
 	var user model.User
 
-	// 从数据库中查找user_name字段和传入的用户名匹配的第一条数据，存储到user中
+	// 从数据库中查找用户名匹配的第一条数据，存储到user中
 	err := model.DB.Where("user_name = ?", service.UserName).First(&user).Error
 
 	// 找不到该用户

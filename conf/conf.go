@@ -11,7 +11,10 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var SignKey = []byte(os.Getenv("JWT_SECRET_KEY"))
+// 全局参数
+var (
+	SignKey = []byte(os.Getenv("JWT_SECRET_KEY"))
+)
 
 // Init 初始化各种配置项
 func Init() {
@@ -24,7 +27,9 @@ func Init() {
 
 	// 环境变量RIM为use时，会启动数据库连接，设置为notuse不会打开连接
 	if os.Getenv("RIM") == "use" {
+		// 初始化mysql数据库连接
 		model.DataBase(os.Getenv("MYSQL_DSN"))
+		// 初始化redis连接
 		cache.Redis()
 	}
 

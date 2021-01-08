@@ -24,28 +24,26 @@ type ChangePasswordService struct {
 
 // Change 用传来的新密码更新到数据库
 func (service *ChangePasswordService) Change(user *model.User) *serializer.Response {
-
+	// 对新密码进行校验，两次输入是否相同
 	if err := service.Valid(); err != nil {
 		return err
 	}
-
+	// 对新密码进行加密
 	if err := user.SetPassword(service.Password); err != nil {
 		return &serializer.Response{
 			Code:    serializer.ServerPanicError,
 			Message: "对密码加密出现错误",
 		}
 	}
-
+	// 将更新了密码后的用户模型保存到数据库
 	if err := model.DB.Save(&user).Error; err != nil {
 		return &serializer.Response{
 			Code:    serializer.DatabaseWriteError,
 			Message: "更新数据库出现错误",
 		}
 	}
-
 	return &serializer.Response{
 		Data:    serializer.BuildUser(*user),
 		Message: "修改密码成功",
 	}
-
 }
